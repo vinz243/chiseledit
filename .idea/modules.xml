@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/chiseledit.iml" filepath="$PROJECT_DIR$/chiseledit.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chiseledit_api.iml" filepath="$PROJECT_DIR$/.idea/modules/chiseledit_api.iml" group="chiseledit" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chiseledit_main.iml" filepath="$PROJECT_DIR$/.idea/modules/chiseledit_main.iml" group="chiseledit" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/chiseledit_test.iml" filepath="$PROJECT_DIR$/.idea/modules/chiseledit_test.iml" group="chiseledit" />
+    </modules>
+  </component>
+</project>
