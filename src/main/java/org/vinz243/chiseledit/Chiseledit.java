@@ -56,6 +56,7 @@ public class Chiseledit {
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new ChiselCommand());
+        event.registerServerCommand(new CMirrorCommand());
     }
 
     /**
