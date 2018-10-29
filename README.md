@@ -17,4 +17,4 @@ Rotate invidiual chisel for each block (but not individual block!). Use it with 
 ```
 /cmirror
 ```
-stand looking to a direction and flip it that way. see `//flip`` 
+stand looking to a direction and flip it that way. see `//flip`
