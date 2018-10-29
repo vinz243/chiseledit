@@ -10,7 +10,7 @@ This adds a few commands that work similar to worldedit's, but on chisel level.
 /crot y <x> <z>
 ```
 
-Rotate invidiual chisel for each block (but not individual block!). Use it with `//rotate`
+Rotate invidiual chisel for each block (but not individual block!). Use it with `//rotate`. Just use the same params you passed and it will work seamlessly
 
 ## Cmirror
 
