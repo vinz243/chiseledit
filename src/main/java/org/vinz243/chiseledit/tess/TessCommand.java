@@ -24,7 +24,7 @@ public class TessCommand implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "tess";
+        return "/tess revol|clear";
     }
 
     @Override
@@ -34,21 +34,35 @@ public class TessCommand implements ICommand {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        TesselatorContainer container = TesselatorContainer.getInstance();
-        WorldEdit instance = WorldEdit.getInstance();
-        LocalSession session = instance.getSessionManager().findByName(Objects.requireNonNull(sender.getCommandSenderEntity()).getName());
+        switch (args[0]) {
+            case "revol":
+            case "revolution":
+                TesselatorContainer container = TesselatorContainer.getInstance();
+                WorldEdit instance = WorldEdit.getInstance();
+                LocalSession session = instance.getSessionManager().findByName(Objects.requireNonNull(sender.getCommandSenderEntity()).getName());
 
-        assert session != null;
-        Region selection = null;
-        try {
-            selection = session.getSelection(session.getSelectionWorld());
-        } catch (IncompleteRegionException e) {
-            e.printStackTrace();
-            sender.sendMessage(new TextComponentString("Incomplete selection!"));
-            return;
+                assert session != null;
+                Region selection = null;
+                try {
+                    selection = session.getSelection(session.getSelectionWorld());
+                } catch (IncompleteRegionException e) {
+                    e.printStackTrace();
+                    sender.sendMessage(new TextComponentString("Incomplete selection!"));
+                    return;
+                }
+
+                container.revolute(new WorldEditRegion(selection.clone()), sender.getPosition(), sender.getEntityWorld());
+
+                break;
+            case "clear":
+            case "clr":
+                TesselatorContainer.getInstance().clear();
+                sender.sendMessage(new TextComponentString("Cleared tessellator !"));
+                break;
+            default:
+                sender.sendMessage(new TextComponentString("Unable to determine command. Use revol or clear"));
+                break;
         }
-
-        container.revolute(new WorldEditRegion(selection.clone()), sender.getPosition(), sender.getEntityWorld());
     }
 
     @Override

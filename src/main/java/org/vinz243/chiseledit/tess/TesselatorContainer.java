@@ -34,6 +34,11 @@ public class TesselatorContainer {
         return sInstance;
     }
 
+    void clear() {
+        regions.clear();
+        axis = null;
+    }
+
     void revolute(IRegion region, BlockPos axis, World world) {
         regions.clear();
         regions.add(region);
