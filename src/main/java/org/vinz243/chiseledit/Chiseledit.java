@@ -2,14 +2,15 @@ package org.vinz243.chiseledit;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.event.RegistryEvent;
+import org.vinz243.chiseledit.tess.TessCommand;
 
 @Mod(
         modid = Chiseledit.MOD_ID,
@@ -57,6 +58,8 @@ public class Chiseledit {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new ChiselCommand());
         event.registerServerCommand(new CMirrorCommand());
+        event.registerServerCommand(new TessCommand());
+        event.registerServerCommand(new CReplaceCommand());
     }
 
     /**

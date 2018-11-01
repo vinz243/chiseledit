@@ -1,6 +1,5 @@
 package org.vinz243.chiseledit;
 
-import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.regions.Region;
@@ -49,14 +48,14 @@ public class ChiselCommand implements ICommand {
                 ChiselUtils.rotateBlock(
                             sender.getEntityWorld(),
                             new BlockPos(block.getBlockX(), block.getBlockY(), block.getBlockZ()),
-                            ChiselUtils.getMatrixForYRotation(Integer.parseInt(args[0]))
+                        ChiselUtils.getMatrixForYRotation(-Integer.parseInt(args[0]))
                 );
 
                 if (args.length > 1) {
                     ChiselUtils.rotateBlock(
                             sender.getEntityWorld(),
                             new BlockPos(block.getBlockX(), block.getBlockY(), block.getBlockZ()),
-                            ChiselUtils.getMatrixForXRotation(Integer.parseInt(args[1]))
+                            ChiselUtils.getMatrixForXRotation(-Integer.parseInt(args[1]))
                     );
                 }
 
@@ -64,11 +63,11 @@ public class ChiselCommand implements ICommand {
                     ChiselUtils.rotateBlock(
                             sender.getEntityWorld(),
                             new BlockPos(block.getBlockX(), block.getBlockY(), block.getBlockZ()),
-                            ChiselUtils.getMatrixForZRotation(Integer.parseInt(args[2]))
+                            ChiselUtils.getMatrixForZRotation(-Integer.parseInt(args[2]))
                     );
                 }
             });
-        } catch (IncompleteRegionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             sender.sendMessage(new TextComponentString("Incomplete selection !"));
         }

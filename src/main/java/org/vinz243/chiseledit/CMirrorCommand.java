@@ -1,6 +1,8 @@
 package org.vinz243.chiseledit;
 
-import com.sk89q.worldedit.*;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.forge.ForgePlayer;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import com.sk89q.worldedit.regions.Region;
@@ -23,12 +25,12 @@ import java.util.Objects;
 public class CMirrorCommand implements ICommand {
     @Override
     public String getName() {
-        return "cmirror";
+        return "cflip";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/cmirror <hor|ver>";
+        return "/cflip <hor|ver>";
     }
 
     @Override
@@ -66,12 +68,9 @@ public class CMirrorCommand implements ICommand {
                         transform.scale(add)
                 );
              });
-        } catch (IncompleteRegionException e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            sender.sendMessage(new TextComponentString("Incomplete selection !"));
-        } catch (UnknownDirectionException e) {
-            e.printStackTrace();
-            sender.sendMessage(new TextComponentString(e.getDirection()));
+            sender.sendMessage(new TextComponentString("Error !"));
         }
     }
 

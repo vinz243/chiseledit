@@ -1,21 +1,24 @@
 package org.vinz243.chiseledit;
 
+import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.math.transform.AffineTransform;
 import mod.chiselsandbits.api.APIExceptions;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IBitBrush;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.helpers.ModUtil;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Tuple;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
-import scala.Int;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
@@ -40,7 +43,7 @@ public class ChiselUtils {
         };
     }
 
-    static int[][] getMatrixForYRotation (int angle) {
+    public static int[][] getMatrixForYRotation(int angle) {
         double theta = angle * Math.PI / 180;
         int cos = (int) Math.cos(theta);
         int sin = (int) Math.sin(theta);
@@ -74,8 +77,7 @@ public class ChiselUtils {
 
     static boolean rotateBlock (World world, BlockPos pos, int[][] rot) {
         IChiselAndBitsAPI chiselAndBitsAPI = ChiselAPIAccess.apiInstance;
-        if (chiselAndBitsAPI.isBlockChiseled(world, pos))
-        {
+        if (chiselAndBitsAPI.isBlockChiseled(world, pos)) {
             IBitAccess bitAccess;
             try {
                 bitAccess = chiselAndBitsAPI.getBitAccess(world, pos);
@@ -100,6 +102,41 @@ public class ChiselUtils {
                     bitAccess.setBitAt(out.getX(), out.getY(), out.getZ(), t.getSecond());
                 } catch (APIExceptions.SpaceOccupied spaceOccupied) {
                     spaceOccupied.printStackTrace();
+                }
+            });
+
+            bitAccess.commitChanges(true);
+        }
+        return true;
+    }
+
+    static boolean replacesChisels(World entityWorld, BlockVector block, Mask replaceFrom, ItemStack replaceTo) {
+
+        IChiselAndBitsAPI chiselAndBitsAPI = ChiselAPIAccess.apiInstance;
+        BlockPos blockPos = new BlockPos(block.getX(), block.getY(), block.getZ());
+        if (chiselAndBitsAPI.isBlockChiseled(entityWorld, blockPos)) {
+            IBitAccess bitAccess;
+            try {
+                bitAccess = chiselAndBitsAPI.getBitAccess(entityWorld, blockPos);
+            } catch (APIExceptions.CannotBeChiseled e) {
+                e.printStackTrace();
+                return false;
+            }
+
+
+            iterator3d(new Vec3i(16, 16, 16), (vec) -> {
+
+                IBitBrush bit = bitAccess.getBitAt(vec.getX(), vec.getY(), vec.getZ());
+                try {
+                    Block block1 = bit.getState().getBlock();
+                    ItemStack itemFromBlock = ModUtil.getItemFromBlock(block1.getBlockState().getBaseState());
+                    System.out.printf(
+                            "(%s,%s) -> %s\n",
+                            bit.getStateID(),
+                            String.format("%s:%s", block1.getBlockState(), itemFromBlock),
+                            chiselAndBitsAPI.createBrush(replaceTo));
+                } catch (APIExceptions.InvalidBitItem invalidBitItem) {
+                    invalidBitItem.printStackTrace();
                 }
             });
 
@@ -141,4 +178,31 @@ public class ChiselUtils {
         }
         return true;
     }
+
+    public static Vec3d toVec3d(Vector vector) {
+        return new Vec3d(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+    public static Vec3d toVec3d(BlockPos vector) {
+        return new Vec3d(vector.getX(), vector.getY(), vector.getZ());
+    }
+
+
+    public static BlockPos toBlockPos(Vector vector) {
+        return new BlockPos(vector.getBlockX(), vector.getBlockY(), vector.getBlockZ());
+    }
+
+    public static BlockPos toBlockPos(Vec3d vector) {
+        return new BlockPos(vector.x, vector.y, vector.z);
+    }
+
+    public static Vector toVector(BlockPos pos) {
+        return new Vector(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public static Vector toVector(Vec3d pos) {
+        return new Vector(pos.x, pos.y, pos.z);
+    }
+
+
 }

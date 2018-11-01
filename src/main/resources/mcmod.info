@@ -3,7 +3,7 @@
     "modid": "chiseledit",
     "name": "Chiseledit",
     "description": "Chisel&Bits + WorldEdit",
-    "version": "1.0-",
+    "version": "${version}",
     "mcversion": "${mcversion}",
     "url": "",
     "updateUrl": "",
