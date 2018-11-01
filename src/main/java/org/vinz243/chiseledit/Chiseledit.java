@@ -59,7 +59,6 @@ public class Chiseledit {
         event.registerServerCommand(new ChiselCommand());
         event.registerServerCommand(new CMirrorCommand());
         event.registerServerCommand(new TessCommand());
-        event.registerServerCommand(new CReplaceCommand());
     }
 
     /**
