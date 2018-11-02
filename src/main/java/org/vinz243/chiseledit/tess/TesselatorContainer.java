@@ -126,6 +126,13 @@ public class TesselatorContainer {
         warnIfNecessary(pos, evt.getPlayer());
     }
 
+    void updateRegion(IRegion region) {
+        regions.clear();
+        regions.add(region);
+
+        forEachAngle((angle) -> regions.add(region.transform(new RotationTransform(angle, ChiselUtils.toVec3d(axis)))));
+    }
+
     private void warnIfNecessary(BlockPos pos, EntityPlayer player) {
         double distance = pos.getDistance(axis.getX(), axis.getY(), axis.getZ());
         long millis = System.currentTimeMillis();
