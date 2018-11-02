@@ -25,6 +25,7 @@ public class TesselatorContainer {
 
     private List<IRegion> regions = new ArrayList<>();
     private BlockPos axis;
+    private boolean destroyBeforeSet = false;
 
     public static TesselatorContainer getInstance() {
         if (sInstance == null) {
@@ -39,20 +40,21 @@ public class TesselatorContainer {
         axis = null;
     }
 
-    void revolute(IRegion region, BlockPos axis, World world) {
+    void revolute(IRegion region, BlockPos axis, World world, ReplaceMode mode) {
         regions.clear();
         regions.add(region);
 
         forEachAngle((angle) -> regions.add(region.transform(new RotationTransform(angle, ChiselUtils.toVec3d(axis)))));
 
+        this.destroyBeforeSet = (mode != ReplaceMode.Default);
         this.axis = axis;
 
         region.forEach((pos) -> {
             IBlockState blockState = world.getBlockState(pos);
-
             revoluteBlock(pos, world, blockState);
         });
 
+        this.destroyBeforeSet = (mode == ReplaceMode.AlwaysDestroy);
     }
 
     @SubscribeEvent
@@ -97,6 +99,9 @@ public class TesselatorContainer {
         Optional<IRegion> first = regions.stream().filter((reg) -> reg.contains(pos)).findFirst();
 
         if (first.isPresent()) {
+            if (destroyBeforeSet) {
+                devoluteBlock(pos, world);
+            }
             revoluteBlock(pos, world, placedBlock);
         }
     }

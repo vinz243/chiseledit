@@ -12,9 +12,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class TessCommand implements ICommand {
     @Override
@@ -24,7 +26,7 @@ public class TessCommand implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/tess revol|clear";
+        return "/tess revol|clear -<r|R>";
     }
 
     @Override
@@ -34,7 +36,23 @@ public class TessCommand implements ICommand {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+
+        String flags = Arrays.stream(args).filter(str -> str.charAt(0) == '-').collect(Collectors.joining());
+
+        ReplaceMode mode = flags.indexOf('R') > -1 ? ReplaceMode.AlwaysDestroy :
+                (flags.indexOf('r') > -1 ? ReplaceMode.DestroyBeforeTessellate : ReplaceMode.Default);
+
+        sender.sendMessage(new TextComponentString("Tessellating with mode " + mode));
+
         switch (args[0]) {
+            case "help":
+            case "h":
+
+                TextComponentString component = new TextComponentString("Tessellator usage:\n" +
+                        "   -r    Destroy every block before tessellating\n" +
+                        "   -R    Destroy each block every revolution");
+                sender.sendMessage(component);
+                break;
             case "revol":
             case "revolution":
                 TesselatorContainer container = TesselatorContainer.getInstance();
@@ -51,7 +69,7 @@ public class TessCommand implements ICommand {
                     return;
                 }
 
-                container.revolute(new WorldEditRegion(selection.clone()), sender.getPosition(), sender.getEntityWorld());
+                container.revolute(new WorldEditRegion(selection.clone()), sender.getPosition(), sender.getEntityWorld(), mode);
 
                 break;
             case "clear":
