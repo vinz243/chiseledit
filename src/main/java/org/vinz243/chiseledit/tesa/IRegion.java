@@ -1,4 +1,4 @@
-package org.vinz243.chiseledit.tess;
+package org.vinz243.chiseledit.tesa;
 
 import net.minecraft.util.math.BlockPos;
 

@@ -1,4 +1,4 @@
-package org.vinz243.chiseledit.tess;
+package org.vinz243.chiseledit.tesa;
 
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
@@ -18,20 +18,20 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TessCommand implements ICommand {
+public class TesaCommand implements ICommand {
     @Override
     public String getName() {
-        return "tess";
+        return "tesa";
     }
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/tess revol|clear -<r|R|i>";
+        return "/tesa revol|clear|update -<r|R|i>";
     }
 
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("tess");
+        return Collections.singletonList("tesa");
     }
 
     @Override
@@ -88,7 +88,7 @@ public class TessCommand implements ICommand {
 
         if (noRegion) {
             selection = new InfiniteRegion();
-            sender.sendMessage(new TextComponentString("Tessellator: using infinite region"));
+            sender.sendMessage(new TextComponentString("Tesa: using infinite region"));
         } else {
             try {
                 selection = new WorldEditRegion(session.getSelection(session.getSelectionWorld()).clone());

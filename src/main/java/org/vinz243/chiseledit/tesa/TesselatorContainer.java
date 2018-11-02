@@ -1,4 +1,4 @@
-package org.vinz243.chiseledit.tess;
+package org.vinz243.chiseledit.tesa;
 
 import mod.chiselsandbits.api.APIExceptions;
 import mod.chiselsandbits.api.EventBlockBitPostModification;
@@ -138,7 +138,7 @@ public class TesselatorContainer {
         long millis = System.currentTimeMillis();
         if (distance > 20 && millis - lastTimeWarned > 20e3) {
             lastTimeWarned = millis;
-            player.sendMessage(new TextComponentString("Tessellator: still active!"));
+            player.sendMessage(new TextComponentString("Tesa: still active!"));
         }
     }
 

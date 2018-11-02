@@ -1,4 +1,4 @@
-package org.vinz243.chiseledit.tess;
+package org.vinz243.chiseledit.tesa;
 
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;

@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.vinz243.chiseledit.tess.TessCommand;
+import org.vinz243.chiseledit.tesa.TesaCommand;
 
 @Mod(
         modid = Chiseledit.MOD_ID,
@@ -58,7 +58,7 @@ public class Chiseledit {
     public void serverStarting(FMLServerStartingEvent event) {
         event.registerServerCommand(new ChiselCommand());
         event.registerServerCommand(new CMirrorCommand());
-        event.registerServerCommand(new TessCommand());
+        event.registerServerCommand(new TesaCommand());
     }
 
     /**
