@@ -5,8 +5,10 @@ import mod.chiselsandbits.api.EventBlockBitPostModification;
 import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent;
@@ -26,6 +28,7 @@ public class TesselatorContainer {
     private List<IRegion> regions = new ArrayList<>();
     private BlockPos axis;
     private boolean destroyBeforeSet = false;
+    private long lastTimeWarned;
 
     public static TesselatorContainer getInstance() {
         if (sInstance == null) {
@@ -87,6 +90,7 @@ public class TesselatorContainer {
                 }
             });
         }
+
     }
 
     @SubscribeEvent
@@ -104,6 +108,8 @@ public class TesselatorContainer {
             }
             revoluteBlock(pos, world, placedBlock);
         }
+
+        warnIfNecessary(pos, evt.getPlayer());
     }
 
     @SubscribeEvent
@@ -115,6 +121,17 @@ public class TesselatorContainer {
 
         if (first.isPresent()) {
             devoluteBlock(pos, world);
+        }
+
+        warnIfNecessary(pos, evt.getPlayer());
+    }
+
+    private void warnIfNecessary(BlockPos pos, EntityPlayer player) {
+        double distance = pos.getDistance(axis.getX(), axis.getY(), axis.getZ());
+        long millis = System.currentTimeMillis();
+        if (distance > 20 && millis - lastTimeWarned > 20e3) {
+            lastTimeWarned = millis;
+            player.sendMessage(new TextComponentString("Tessellator: still active!"));
         }
     }
 

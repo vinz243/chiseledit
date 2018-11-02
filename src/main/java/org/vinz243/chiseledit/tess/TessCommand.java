@@ -3,7 +3,6 @@ package org.vinz243.chiseledit.tess;
 import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.regions.Region;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
@@ -26,7 +25,7 @@ public class TessCommand implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/tess revol|clear -<r|R>";
+        return "/tess revol|clear -<r|R|i>";
     }
 
     @Override
@@ -41,6 +40,7 @@ public class TessCommand implements ICommand {
 
         ReplaceMode mode = flags.indexOf('R') > -1 ? ReplaceMode.AlwaysDestroy :
                 (flags.indexOf('r') > -1 ? ReplaceMode.DestroyBeforeTessellate : ReplaceMode.Default);
+        boolean noRegion = flags.indexOf('i') > -1;
 
         sender.sendMessage(new TextComponentString("Tessellating with mode " + mode));
 
@@ -50,7 +50,8 @@ public class TessCommand implements ICommand {
 
                 TextComponentString component = new TextComponentString("Tessellator usage:\n" +
                         "   -r    Destroy every block before tessellating\n" +
-                        "   -R    Destroy each block every revolution");
+                        "   -R    Destroy each block every revolution" +
+                        "   -i    Use an infinite region");
                 sender.sendMessage(component);
                 break;
             case "revol":
@@ -60,16 +61,22 @@ public class TessCommand implements ICommand {
                 LocalSession session = instance.getSessionManager().findByName(Objects.requireNonNull(sender.getCommandSenderEntity()).getName());
 
                 assert session != null;
-                Region selection = null;
-                try {
-                    selection = session.getSelection(session.getSelectionWorld());
-                } catch (IncompleteRegionException e) {
-                    e.printStackTrace();
-                    sender.sendMessage(new TextComponentString("Incomplete selection!"));
-                    return;
+                IRegion selection = null;
+
+                if (noRegion) {
+                    selection = new InfiniteRegion();
+                    sender.sendMessage(new TextComponentString("Tessellator: using infinite region"));
+                } else {
+                    try {
+                        selection = new WorldEditRegion(session.getSelection(session.getSelectionWorld()).clone());
+                    } catch (IncompleteRegionException e) {
+                        e.printStackTrace();
+                        sender.sendMessage(new TextComponentString("Incomplete selection!"));
+                        return;
+                    }
                 }
 
-                container.revolute(new WorldEditRegion(selection.clone()), sender.getPosition(), sender.getEntityWorld(), mode);
+                container.revolute(selection, sender.getPosition(), sender.getEntityWorld(), mode);
 
                 break;
             case "clear":
