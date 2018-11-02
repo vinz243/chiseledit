@@ -22,17 +22,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.IntConsumer;
 
-public class TesselatorContainer {
-    private static TesselatorContainer sInstance;
+public class TessellatorContainer {
+    private static TessellatorContainer sInstance;
 
     private List<IRegion> regions = new ArrayList<>();
     private BlockPos axis;
     private boolean destroyBeforeSet = false;
     private long lastTimeWarned;
 
-    public static TesselatorContainer getInstance() {
+    public static TessellatorContainer getInstance() {
         if (sInstance == null) {
-            sInstance = new TesselatorContainer();
+            sInstance = new TessellatorContainer();
             MinecraftForge.EVENT_BUS.register(sInstance);
         }
         return sInstance;

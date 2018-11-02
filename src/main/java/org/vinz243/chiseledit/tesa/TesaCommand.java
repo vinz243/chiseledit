@@ -55,13 +55,13 @@ public class TesaCommand implements ICommand {
                 sender.sendMessage(component);
                 break;
             case "update":
-                TesselatorContainer.getInstance().updateRegion(getRegion(sender, infiniteRegion));
+                TessellatorContainer.getInstance().updateRegion(getRegion(sender, infiniteRegion));
                 sender.sendMessage(new TextComponentString("Tessellator: updated region!"));
                 return;
             case "revol":
             case "revolution":
                 sender.sendMessage(new TextComponentString("Tessellating with mode " + mode));
-                TesselatorContainer container = TesselatorContainer.getInstance();
+                TessellatorContainer container = TessellatorContainer.getInstance();
                 IRegion selection = getRegion(sender, infiniteRegion);
                 if (selection == null) return;
 
@@ -70,7 +70,7 @@ public class TesaCommand implements ICommand {
                 break;
             case "clear":
             case "clr":
-                TesselatorContainer.getInstance().clear();
+                TessellatorContainer.getInstance().clear();
                 sender.sendMessage(new TextComponentString("Cleared tessellator !"));
                 break;
             default:
