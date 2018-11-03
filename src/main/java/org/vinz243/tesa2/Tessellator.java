@@ -11,14 +11,23 @@ import org.vinz243.tesa2.transforms.TransformRegistry;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Tessellator {
     private List<Transform> transforms = new ArrayList<>();
 
     public void apply(World world, BlockPos pos, IBlockState state) {
-        transforms.forEach(t -> {
-            t.apply(new Vector(pos)).forEach((outPos) -> {
-                world.setBlockState(outPos.getVector().toBlockPos(), state);
+        apply(world, new Vector(pos), state, transforms);
+    }
+
+    private void apply(World world, Vector pos, IBlockState state, List<Transform> transforms) {
+        System.out.println("transform " + pos);
+        IntStream.range(0, transforms.size()).forEach(i -> {
+            transforms.get(i).apply(pos).forEach((result) -> {
+                final Vector vector = result.getVector();
+                System.out.println("    -> " + vector);
+                world.setBlockState(vector.toBlockPos(), state);
+                apply(world, vector, state, transforms.subList(i + 1, transforms.size()));
             });
         });
     }

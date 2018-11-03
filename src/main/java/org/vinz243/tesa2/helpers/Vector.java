@@ -1,7 +1,7 @@
 package org.vinz243.tesa2.helpers;
 
-import com.sun.javafx.geom.Vec3d;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 
 public class Vector {
     private final double x, y, z;
@@ -66,5 +66,9 @@ public class Vector {
 
     public double getZ() {
         return z;
+    }
+
+    public String toString() {
+        return String.format("(%f, %f, %f)", x, y, z);
     }
 }

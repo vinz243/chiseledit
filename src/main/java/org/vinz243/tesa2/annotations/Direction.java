@@ -7,7 +7,6 @@ import java.lang.annotation.Target;
 
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Coordinates {
+public @interface Direction {
     Source from() default Source.Player;
-
 }

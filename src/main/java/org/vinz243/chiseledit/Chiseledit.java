@@ -13,6 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import org.vinz243.tesa2.Tesa2Command;
 import org.vinz243.tesa2.Tesa2Manager;
+import org.vinz243.tesa2.transforms.ReflectionTransform;
 import org.vinz243.tesa2.transforms.TransformRegistry;
 import org.vinz243.tesa2.transforms.YRevolutionTransform;
 
@@ -49,7 +50,9 @@ public class Chiseledit {
     public void init(FMLInitializationEvent event) {
         TransformRegistry.getInstance()
                 .register("yrevolution", YRevolutionTransform.class)
-                .register("yr", YRevolutionTransform.class);
+                .register("yrev", YRevolutionTransform.class)
+                .register("refl", ReflectionTransform.class)
+                .register("reflection", ReflectionTransform.class);
 
     }
 

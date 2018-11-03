@@ -1,8 +1,12 @@
 package org.vinz243.tesa2.transforms;
 
+import net.minecraft.util.math.Vec3d;
+import org.apache.commons.lang3.NotImplementedException;
 import org.vinz243.tesa2.CommandContext;
 import org.vinz243.tesa2.annotations.Coordinates;
+import org.vinz243.tesa2.annotations.Direction;
 import org.vinz243.tesa2.annotations.InstantiableTransform;
+import org.vinz243.tesa2.annotations.Source;
 import org.vinz243.tesa2.helpers.Vector;
 
 import java.lang.annotation.Annotation;
@@ -49,8 +53,8 @@ public class TransformRegistry {
                 assert (annotations.length == 1);
                 Annotation annotation = annotations[0];
                 if (annotation instanceof Coordinates) {
-                    Coordinates.Source source = ((Coordinates) annotation).from();
-                    if (source == Coordinates.Source.Player) {
+                    Source source = ((Coordinates) annotation).from();
+                    if (source == Source.Player) {
                         return new Vector(context.getPlayer().getPosition());
                     } else {
                         int pos = argCursor.getAndAdd(3);
@@ -60,9 +64,18 @@ public class TransformRegistry {
                                 Integer.valueOf(args[pos + 2])
                         );
                     }
+                } else if (annotation instanceof Direction) {
+                    final Source from = ((Direction) annotation).from();
+                    if (from == Source.Player) {
+                        final Vec3d lookVec = context.getPlayer().getLookVec();
+                        return new Vector(lookVec);
+                    } else {
+                        throw new NotImplementedException("Not implemented");
+                    }
                 }
                 return null;
             })).toArray();
+
             return (Transform) transform.newInstance(initargs);
         } else {
             return null;
