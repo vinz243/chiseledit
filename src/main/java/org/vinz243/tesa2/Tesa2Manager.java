@@ -1,8 +1,10 @@
 package org.vinz243.tesa2;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.vinz243.tesa2.helpers.Vector;
 import org.vinz243.tesa2.transforms.NoSuchTransformException;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,9 +41,26 @@ public class Tesa2Manager {
 
         if (!tessellators.containsKey(playerId)) return;
 
-        BlockPos pos = evt.getPos();
+        final BlockPos pos = evt.getPos();
+        final IBlockState placedBlock = evt.getPlacedBlock();
 
-        tessellators.get(playerId).apply(context.getWorld(), pos, evt.getPlacedBlock());
+        tessellators.get(playerId).apply(new Vector(pos), (position) -> {
+            evt.getWorld().setBlockState(position.getVector().toBlockPos(), placedBlock);
+        });
+    }
+
+    @SubscribeEvent
+    public void onBlockDestroyed(BlockEvent.BreakEvent evt) {
+        final Context context = new Context(evt.getPlayer(), evt.getWorld());
+        final String playerId = getPlayerId(context);
+
+        if (!tessellators.containsKey(playerId)) return;
+
+        final BlockPos pos = evt.getPos();
+
+        tessellators.get(playerId).apply(new Vector(pos), (position) -> {
+            evt.getWorld().destroyBlock(position.getVector().toBlockPos(), false);
+        });
     }
 
     private String getPlayerId(Context context) {
