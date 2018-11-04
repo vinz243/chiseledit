@@ -10,7 +10,7 @@ public abstract class SimpleAffineTransform implements Transform {
 
     @Override
     public Iterable<TransformResult> apply(Vector in) {
-        return Collections.singleton(new TransformResult(getTransform().multiply(in.subtract(getOffset())).add(getOffset()), getChiselTransform()));
+        return Collections.singleton(new TransformResult(getTransform().multiply(in.subtract(getOffset())).add(getOffset()), in, getChiselTransform()));
     }
 
     abstract Matrix getTransform();

@@ -24,9 +24,16 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.stream.IntStream;
 
 public class TesaManager {
+
+    private static EnumParticleTypes[] PARTICLE_CYCLE = {
+            EnumParticleTypes.SMOKE_NORMAL,
+            EnumParticleTypes.SPELL_MOB,
+            EnumParticleTypes.ENCHANTMENT_TABLE,
+            EnumParticleTypes.VILLAGER_HAPPY
+    };
 
     private static final TesaManager sInstance = new TesaManager();
 
@@ -36,23 +43,26 @@ public class TesaManager {
         return sInstance;
     }
 
-
     public void debug(Vector pos, CommandContext context) {
         final List<Transform> transforms = getTransforms(context);
 
         final String[] args = context.getRemainingArgs();
         int size = args.length > 0 ? Integer.valueOf(args[0]) : 16;
 
-        transforms.forEach((tr) -> {
-            final Visualizer visualizer = tr.getVisualizer();
+        IntStream.range(0, transforms.size()).forEach((i) -> {
+            final Visualizer visualizer = transforms.get(i).getVisualizer();
 
             visualizer.getVertices(pos.add(-size), pos.add(size)).forEach((vec) -> {
-                ((WorldServer) context.getWorld()).spawnParticle(
-                        (EntityPlayerMP) context.getPlayer(),
-                        EnumParticleTypes.FIREWORKS_SPARK,
-                        true, vec.getX(), vec.getY(), vec.getZ(), 5, 0, 0, 0, 0.001);
+                spawnParticleAt(context, PARTICLE_CYCLE[i % PARTICLE_CYCLE.length], vec);
             });
         });
+    }
+
+    private void spawnParticleAt(CommandContext context, EnumParticleTypes type, Vector vec) {
+        ((WorldServer) context.getWorld()).spawnParticle(
+                (EntityPlayerMP) context.getPlayer(),
+                type,
+                true, vec.getX(), vec.getY(), vec.getZ(), 3, 0, 0, 0, 0);
     }
 
     public List<Transform> getTransforms(CommandContext context) {
@@ -105,7 +115,10 @@ public class TesaManager {
     void onChiselEdited(EventBlockBitPostModification event) {
         final BlockPos pos = event.getPos();
         final EntityPlayer closestPlayer = event.getWorld().getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20, false);
-        final Context context = new Context(Objects.requireNonNull(closestPlayer), event.getWorld());
+
+        if (closestPlayer == null) return;
+
+        final Context context = new Context(closestPlayer, event.getWorld());
         final String playerId = getPlayerId(context);
 
         if (!tessellators.containsKey(playerId)) return;
@@ -123,7 +136,7 @@ public class TesaManager {
             try {
                 IBitAccess outAccess = bitsAPI.getBitAccess(event.getWorld(), result.getVector().toBlockPos());
 
-                IBitAccess inAccess = bitsAPI.getBitAccess(event.getWorld(), pos);
+                IBitAccess inAccess = bitsAPI.getBitAccess(event.getWorld(), result.getInput().toBlockPos());
 
                 inAccess.visitBits((x, y, z, brush) -> {
                     Vector outPos = result.getChiselTransform().multiply(new Vector(x, y, z).add(-7.5)).add(7.5);

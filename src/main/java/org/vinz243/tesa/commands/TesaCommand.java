@@ -26,7 +26,7 @@ public class TesaCommand implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/tesa <clear|add> <args>";
+        return "/tesa <clear|add|debug> <args>";
     }
 
     @Override

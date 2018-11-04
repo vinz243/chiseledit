@@ -19,7 +19,7 @@ public abstract class MultipleAffineTransform extends MultipleTransform {
         Vector offset = getOffset(i);
         return new TransformResult(
                 getMatrix(i).multiply(in.subtract(offset)).add(offset),
-                getChiselMatrix(i)
+                in, getChiselMatrix(i)
         );
     }
 }
