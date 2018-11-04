@@ -1,6 +1,5 @@
 package org.vinz243.tesa2.transforms;
 
-import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.NotImplementedException;
 import org.vinz243.tesa2.CommandContext;
 import org.vinz243.tesa2.annotations.Coordinates;
@@ -67,8 +66,14 @@ public class TransformRegistry {
                 } else if (annotation instanceof Direction) {
                     final Source from = ((Direction) annotation).from();
                     if (from == Source.Player) {
-                        final Vec3d lookVec = context.getPlayer().getLookVec();
-                        return new Vector(lookVec);
+                        switch (context.getPlayer().getHorizontalFacing().getAxis()) {
+                            case X:
+                                return Direction.Axis.X;
+                            case Y:
+                                return Direction.Axis.Y;
+                            case Z:
+                                return Direction.Axis.Z;
+                        }
                     } else {
                         throw new NotImplementedException("Not implemented");
                     }

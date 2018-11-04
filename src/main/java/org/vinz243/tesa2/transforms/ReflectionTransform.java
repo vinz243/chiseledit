@@ -12,8 +12,8 @@ public class ReflectionTransform extends SimpleAffineTransform {
     private final Vector offset;
 
     @InstantiableTransform
-    public ReflectionTransform(@Direction Vector direction, @Coordinates Vector pos) {
-        if (direction.getX() > direction.getZ()) {
+    public ReflectionTransform(@Direction Direction.Axis direction, @Coordinates Vector pos) {
+        if (direction == Direction.Axis.X) {
             this.matrix = new Matrix(
                     -1, 0, 0,
                     0, 1, 0,
@@ -36,7 +36,20 @@ public class ReflectionTransform extends SimpleAffineTransform {
     }
 
     @Override
+    Matrix getChiselTransform() {
+        return matrix;
+    }
+
+    @Override
     Vector getOffset() {
         return offset;
+    }
+
+    @Override
+    public String toString() {
+        return "ReflectionTransform{" +
+                "matrix=" + matrix +
+                ", offset=" + offset +
+                '}';
     }
 }

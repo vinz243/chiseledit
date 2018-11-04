@@ -36,6 +36,15 @@ public class Tesa2Command implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 
         switch (args[0]) {
+            case "list":
+                Tesa2Manager.getInstance().getTransforms(getContext(sender, args, 0)).forEach((tr) -> {
+                    sender.sendMessage(new StringComponent(tr.toString()));
+                });
+                return;
+            case "clear":
+                Tesa2Manager.getInstance().clearTransforms(getContext(sender, args, 0));
+                sender.sendMessage(new StringComponent("Cleared tessellator!"));
+                return;
             case "add":
                 final String transformName = args[1];
                 try {

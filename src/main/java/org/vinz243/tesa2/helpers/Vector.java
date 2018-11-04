@@ -32,6 +32,10 @@ public class Vector {
         return new Vector(other.x + x, other.y + y, other.z + z);
     }
 
+    public Vector add(double d) {
+        return add(new Vector(d, d, d));
+    }
+
     public Vector subtract(Vector other) {
         return add(other.multiply(-1));
     }
@@ -70,5 +74,9 @@ public class Vector {
 
     public String toString() {
         return String.format("(%f, %f, %f)", x, y, z);
+    }
+
+    public int blockPosHashCode() {
+        return (int) ((551281 * getBlockX() + getBlockY()) * 172633 + z);
     }
 }

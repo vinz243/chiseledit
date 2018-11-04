@@ -37,7 +37,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/worldedit-forge-mc1.12-6.1.8-dist.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/chiselsandbits-14.16.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -46,7 +46,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../../libs/chiselsandbits-14.16.jar!/" />
+          <root url="jar://$MODULE_DIR$/../../libs/worldedit-forge-mc1.12-6.1.8-dist.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

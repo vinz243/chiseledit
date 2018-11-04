@@ -35,4 +35,11 @@ public class YRevolutionTransform extends MultipleAffineTransform {
     int getIterations() {
         return 3;
     }
+
+    @Override
+    public String toString() {
+        return "YRevolutionTransform{" +
+                "axis=" + axis +
+                '}';
+    }
 }

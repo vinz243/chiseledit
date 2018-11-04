@@ -9,4 +9,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Direction {
     Source from() default Source.Player;
+
+    enum Axis {
+        X, Y, Z
+    }
 }

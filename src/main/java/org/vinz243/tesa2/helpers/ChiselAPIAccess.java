@@ -1,4 +1,4 @@
-package org.vinz243.chiseledit;
+package org.vinz243.tesa2.helpers;
 
 import mod.chiselsandbits.api.ChiselsAndBitsAddon;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
@@ -9,8 +9,7 @@ public class ChiselAPIAccess implements IChiselsAndBitsAddon {
     public static IChiselAndBitsAPI apiInstance;
 
     @Override
-    public void onReadyChiselsAndBits(IChiselAndBitsAPI api)
-    {
+    public void onReadyChiselsAndBits(IChiselAndBitsAPI api) {
         apiInstance = api;
     }
 
