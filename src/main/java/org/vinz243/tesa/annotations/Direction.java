@@ -10,7 +10,4 @@ import java.lang.annotation.Target;
 public @interface Direction {
     Source from() default Source.Player;
 
-    enum Axis {
-        X, Y, Z
-    }
 }

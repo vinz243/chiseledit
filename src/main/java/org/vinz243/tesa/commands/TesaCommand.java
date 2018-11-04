@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockPos;
 import org.vinz243.tesa.TesaManager;
 import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.helpers.StringComponent;
+import org.vinz243.tesa.helpers.Vector;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 
 import javax.annotation.Nullable;
@@ -38,6 +39,11 @@ public class TesaCommand implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 
         switch (args[0]) {
+            case "visu":
+            case "debug":
+                final CommandContext context = getContext(sender, args, 1);
+                TesaManager.getInstance().debug(new Vector(context.getPlayer().getPosition()), context);
+                return;
             case "list":
                 TesaManager.getInstance().getTransforms(getContext(sender, args, 0)).forEach((tr) -> {
                     sender.sendMessage(new StringComponent(tr.toString()));
@@ -66,7 +72,7 @@ public class TesaCommand implements ICommand {
         return new CommandContext(
                 (EntityPlayer) sender.getCommandSenderEntity(),
                 sender.getEntityWorld(),
-                Arrays.copyOfRange(args, from, args.length - 1)
+                Arrays.copyOfRange(args, from, args.length)
         );
     }
 

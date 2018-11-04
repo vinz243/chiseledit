@@ -6,7 +6,10 @@ import mod.chiselsandbits.api.IBitAccess;
 import mod.chiselsandbits.api.IChiselAndBitsAPI;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.vinz243.tesa.context.CommandContext;
@@ -15,6 +18,7 @@ import org.vinz243.tesa.helpers.ChiselAPIAccess;
 import org.vinz243.tesa.helpers.Vector;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 import org.vinz243.tesa.transforms.Transform;
+import org.vinz243.tesa.visu.Visualizer;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -30,6 +34,25 @@ public class TesaManager {
 
     public static TesaManager getInstance() {
         return sInstance;
+    }
+
+
+    public void debug(Vector pos, CommandContext context) {
+        final List<Transform> transforms = getTransforms(context);
+
+        final String[] args = context.getRemainingArgs();
+        int size = args.length > 0 ? Integer.valueOf(args[0]) : 16;
+
+        transforms.forEach((tr) -> {
+            final Visualizer visualizer = tr.getVisualizer();
+
+            visualizer.getVertices(pos.add(-size), pos.add(size)).forEach((vec) -> {
+                ((WorldServer) context.getWorld()).spawnParticle(
+                        (EntityPlayerMP) context.getPlayer(),
+                        EnumParticleTypes.FIREWORKS_SPARK,
+                        true, vec.getX(), vec.getY(), vec.getZ(), 5, 0, 0, 0, 0.001);
+            });
+        });
     }
 
     public List<Transform> getTransforms(CommandContext context) {

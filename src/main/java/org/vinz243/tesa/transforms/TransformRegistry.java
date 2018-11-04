@@ -6,6 +6,7 @@ import org.vinz243.tesa.annotations.Direction;
 import org.vinz243.tesa.annotations.InstantiableTransform;
 import org.vinz243.tesa.annotations.Source;
 import org.vinz243.tesa.context.CommandContext;
+import org.vinz243.tesa.helpers.Axis;
 import org.vinz243.tesa.helpers.Vector;
 
 import java.lang.annotation.Annotation;
@@ -68,11 +69,11 @@ public class TransformRegistry {
                     if (from == Source.Player) {
                         switch (context.getPlayer().getHorizontalFacing().getAxis()) {
                             case X:
-                                return Direction.Axis.X;
+                                return Axis.X;
                             case Y:
-                                return Direction.Axis.Y;
+                                return Axis.Y;
                             case Z:
-                                return Direction.Axis.Z;
+                                return Axis.Z;
                         }
                     } else {
                         throw new NotImplementedException("Not implemented");

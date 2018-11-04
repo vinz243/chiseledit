@@ -6,6 +6,8 @@ import org.vinz243.tesa.annotations.Source;
 import org.vinz243.tesa.helpers.Matrix;
 import org.vinz243.tesa.helpers.Vector;
 import org.vinz243.tesa.helpers.YRotationMatrix;
+import org.vinz243.tesa.visu.AxisVisualizer;
+import org.vinz243.tesa.visu.Visualizer;
 
 public class YRevolutionTransform extends MultipleAffineTransform {
 
@@ -41,5 +43,10 @@ public class YRevolutionTransform extends MultipleAffineTransform {
         return "YRevolutionTransform{" +
                 "axis=" + axis +
                 '}';
+    }
+
+    @Override
+    public Visualizer getVisualizer() {
+        return new AxisVisualizer(axis);
     }
 }
