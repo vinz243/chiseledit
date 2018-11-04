@@ -11,11 +11,11 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.GameRegistry;
-import org.vinz243.tesa2.Tesa2Command;
-import org.vinz243.tesa2.Tesa2Manager;
-import org.vinz243.tesa2.transforms.ReflectionTransform;
-import org.vinz243.tesa2.transforms.TransformRegistry;
-import org.vinz243.tesa2.transforms.YRevolutionTransform;
+import org.vinz243.tesa.TesaManager;
+import org.vinz243.tesa.commands.TesaCommand;
+import org.vinz243.tesa.transforms.ReflectionTransform;
+import org.vinz243.tesa.transforms.TransformRegistry;
+import org.vinz243.tesa.transforms.YRevolutionTransform;
 
 @Mod(
         modid = Chiseledit.MOD_ID,
@@ -61,7 +61,7 @@ public class Chiseledit {
      */
     @Mod.EventHandler
     public void postinit(FMLPostInitializationEvent event) {
-        MinecraftForge.EVENT_BUS.register(Tesa2Manager.getInstance());
+        MinecraftForge.EVENT_BUS.register(TesaManager.getInstance());
     }
 
     @Mod.EventHandler
@@ -69,7 +69,7 @@ public class Chiseledit {
 //        event.registerServerCommand(new ChiselCommand());
 //        event.registerServerCommand(new CMirrorCommand());
 //        event.registerServerCommand(new TesaCommand());
-        event.registerServerCommand(new Tesa2Command());
+        event.registerServerCommand(new TesaCommand());
 
     }
 

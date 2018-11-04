@@ -1,7 +1,7 @@
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.vinz243.tesa2.helpers.Matrix;
+import org.vinz243.tesa.helpers.Matrix;
 
 public class MatrixTest {
     private Matrix foo;
