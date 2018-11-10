@@ -24,9 +24,9 @@ import org.vinz243.tesa.transforms.YRevolutionTransform;
 )
 public class Chiseledit {
 
-    public static final String MOD_ID = "tesa";
-    public static final String MOD_NAME = "Tesalator";
-    public static final String VERSION = "${version}";
+    public static final String MOD_ID = "chiseledit";
+    public static final String MOD_NAME = "Chiseledit";
+    public static final String VERSION = "1.0-SNAPSHOT";
 
     /**
      * This is the instance of your mod as created by Forge. It will never be null.
@@ -66,9 +66,8 @@ public class Chiseledit {
 
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
-//        event.registerServerCommand(new ChiselCommand());
-//        event.registerServerCommand(new CMirrorCommand());
-//        event.registerServerCommand(new TesaCommand());
+        event.registerServerCommand(new CRotCommand());
+        event.registerServerCommand(new CMirrorCommand());
         event.registerServerCommand(new TesaCommand());
 
     }
