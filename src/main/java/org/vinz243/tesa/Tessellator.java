@@ -3,6 +3,8 @@ package org.vinz243.tesa;
 import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.helpers.TransformResult;
 import org.vinz243.tesa.helpers.Vector;
+import org.vinz243.tesa.masks.Mask;
+import org.vinz243.tesa.masks.MaskFactory;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 import org.vinz243.tesa.transforms.Transform;
 import org.vinz243.tesa.transforms.TransformRegistry;
@@ -19,6 +21,8 @@ public class Tessellator {
     private List<Transform> transforms = new ArrayList<>();
     private boolean chiselLocked = false;
     private Set<Integer> debouncedBlocks = new HashSet<>();
+    private final MaskFactory maskFactory = new MaskFactory();
+
 
     void debouncedApply(Vector pos, Consumer<TransformResult> applyFunction) {
         if (debouncedBlocks.remove(pos.blockPosHashCode())) {
@@ -33,10 +37,10 @@ public class Tessellator {
     void apply(Vector pos, Consumer<TransformResult> applyFunction) {
         final ArrayList<Integer> placedBlocks = new ArrayList<>();
         placedBlocks.add(pos.blockPosHashCode());
-        apply(pos, applyFunction, transforms, placedBlocks);
+        apply(pos, applyFunction, transforms, placedBlocks, maskFactory.get());
     }
 
-    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, List<Integer> placedBlocks) {
+    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, List<Integer> placedBlocks, Mask mask) {
         IntStream.range(0, transforms.size()).forEach(i -> {
             List<Vector> children = new ArrayList<>();
             transforms.get(i).apply(pos).forEach((result) -> {
@@ -46,12 +50,15 @@ public class Tessellator {
                     return;
                 }
                 placedBlocks.add(hash);
-                applyFunction.accept(result);
+
+                if (mask.test(result.getVector())) {
+                    applyFunction.accept(result);
+                }
 
                 children.add(result.getVector());
             });
             children.forEach(v -> {
-                apply(v, applyFunction, transforms.subList(i + 1, transforms.size()), placedBlocks);
+                apply(v, applyFunction, transforms.subList(i + 1, transforms.size()), placedBlocks, mask);
             });
         });
     }
@@ -80,5 +87,9 @@ public class Tessellator {
 
     List<Transform> getTransforms() {
         return transforms;
+    }
+
+    public MaskFactory getMaskFactory() {
+        return maskFactory;
     }
 }

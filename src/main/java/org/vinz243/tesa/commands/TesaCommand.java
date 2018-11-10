@@ -1,8 +1,13 @@
 package org.vinz243.tesa.commands;
 
+import com.sk89q.worldedit.IncompleteRegionException;
+import com.sk89q.worldedit.LocalSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.regions.Region;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +22,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class TesaCommand implements ICommand {
     @Override
@@ -65,15 +71,34 @@ public class TesaCommand implements ICommand {
                     sender.sendMessage(new StringComponent("Unable to instantiate transform"));
                 }
                 return;
+            case "mask":
+                final CommandContext ct = getContext(sender, args, 1);
+                TesaManager.getInstance().setMask(ct);
+                return;
         }
     }
 
     private CommandContext getContext(ICommandSender sender, String[] args, int from) {
+        Entity entity = Objects.requireNonNull(sender.getCommandSenderEntity());
+        WorldEdit instance = WorldEdit.getInstance();
+
+        LocalSession session = instance.getSessionManager().findByName(entity.getName());
+
+        Region selection = null;
+        try {
+            selection = session.getSelection(session.getSelectionWorld());
+        } catch (IncompleteRegionException | NullPointerException e) {
+            return new CommandContext(
+                    (EntityPlayer) sender.getCommandSenderEntity(),
+                    sender.getEntityWorld(),
+                    Arrays.copyOfRange(args, from, args.length),
+                    null, null);
+        }
         return new CommandContext(
                 (EntityPlayer) sender.getCommandSenderEntity(),
                 sender.getEntityWorld(),
-                Arrays.copyOfRange(args, from, args.length)
-        );
+                Arrays.copyOfRange(args, from, args.length),
+                new Vector(selection.getMinimumPoint()), new Vector(selection.getMaximumPoint()));
     }
 
     @Override

@@ -16,6 +16,7 @@ import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.context.Context;
 import org.vinz243.tesa.helpers.ChiselAPIAccess;
 import org.vinz243.tesa.helpers.Vector;
+import org.vinz243.tesa.masks.MaskFactory;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 import org.vinz243.tesa.transforms.Transform;
 import org.vinz243.tesa.visu.Visualizer;
@@ -70,12 +71,13 @@ public class TesaManager {
     }
 
     public void addTransform(String key, CommandContext context) throws NoSuchTransformException, InstantiationException, IllegalAccessException, InvocationTargetException {
-        String id = getPlayerId(context);
-        if (!tessellators.containsKey(id)) {
-            tessellators.put(id, new Tessellator());
-        }
-        Tessellator tessellator = tessellators.get(id);
+        Tessellator tessellator = getTessellator(context);
         tessellator.addTransform(key, context);
+    }
+
+    private Tessellator getTessellator(CommandContext context) {
+        String id = getPlayerId(context);
+        return tessellators.computeIfAbsent(id, k -> new Tessellator());
     }
 
     public void clearTransforms(CommandContext context) {
@@ -159,5 +161,25 @@ public class TesaManager {
 
     private String getPlayerId(Context context) {
         return context.getPlayer().getCachedUniqueIdString();
+    }
+
+    public void setMask(CommandContext ct) {
+        final MaskFactory maskFactory = getTessellator(ct).getMaskFactory();
+
+        switch (ct.getRemainingArgs()[0]) {
+            case "add":
+                maskFactory.add(ct.getPos1(), ct.getPos2());
+                break;
+            case "sub":
+                maskFactory.sub(ct.getPos1(), ct.getPos2());
+                break;
+            case "set":
+                maskFactory.set(ct.getPos1(), ct.getPos2());
+                break;
+            case "int":
+                maskFactory.intersection(ct.getPos1(), ct.getPos2());
+                break;
+        }
+
     }
 }

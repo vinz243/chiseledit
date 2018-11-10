@@ -16,6 +16,10 @@ public class Vector {
         this(vec.x, vec.y, vec.z);
     }
 
+    public Vector(com.sk89q.worldedit.Vector vec) {
+        this(vec.getX(), vec.getY(), vec.getZ());
+    }
+
     public Vector(BlockPos pos) {
         this(pos.getX(), pos.getY(), pos.getZ());
     }
