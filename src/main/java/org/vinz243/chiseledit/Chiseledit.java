@@ -69,7 +69,7 @@ public class Chiseledit {
         event.registerServerCommand(new CRotCommand());
         event.registerServerCommand(new CMirrorCommand());
         event.registerServerCommand(new TesaCommand());
-
+        event.registerServerCommand(new CReplaceCommand());
     }
 
     /**
