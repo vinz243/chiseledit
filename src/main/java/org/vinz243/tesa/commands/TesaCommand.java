@@ -16,6 +16,7 @@ import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.helpers.StringComponent;
 import org.vinz243.tesa.helpers.Vector;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
+import org.vinz243.tesa.transforms.Transform;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -32,7 +33,7 @@ public class TesaCommand implements ICommand {
 
     @Override
     public String getUsage(ICommandSender sender) {
-        return "/tesa <clear|add|debug> <args>";
+        return "/tesa <clear|add|visu|mask|pop> <args>";
     }
 
     @Override
@@ -45,6 +46,10 @@ public class TesaCommand implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 
         switch (args[0]) {
+            case "pop":
+                final List<Transform> transforms = TesaManager.getInstance().getTransforms(getContext(sender, args, 1));
+                transforms.remove(transforms.size() - 1);
+                return;
             case "visu":
             case "debug":
                 final CommandContext context = getContext(sender, args, 1);
