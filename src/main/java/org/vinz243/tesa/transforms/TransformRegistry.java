@@ -1,10 +1,7 @@
 package org.vinz243.tesa.transforms;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.vinz243.tesa.annotations.Coordinates;
-import org.vinz243.tesa.annotations.Direction;
-import org.vinz243.tesa.annotations.InstantiableTransform;
-import org.vinz243.tesa.annotations.Source;
+import org.vinz243.tesa.annotations.*;
 import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.helpers.Axis;
 import org.vinz243.tesa.helpers.Vector;
@@ -44,13 +41,13 @@ public class TransformRegistry {
 
         if (first.isPresent()) {
             Constructor<?> transform = first.get();
-            AtomicInteger argCursor = new AtomicInteger();
+            AtomicInteger argCursor = new AtomicInteger(1);
             String[] args = context.getRemainingArgs();
 
             transform.setAccessible(true);
 
-            final Object[] initargs = Arrays.stream(transform.getParameterAnnotations()).map((annotations -> {
-                assert (annotations.length == 1);
+            final Object[] initargs = Arrays.stream(transform.getParameterAnnotations()).map(annotations -> {
+                if (annotations.length != 1) throw new AssertionError();
                 Annotation annotation = annotations[0];
                 if (annotation instanceof Coordinates) {
                     Source source = ((Coordinates) annotation).from();
@@ -78,9 +75,23 @@ public class TransformRegistry {
                     } else {
                         throw new NotImplementedException("Not implemented");
                     }
+                } else if (annotation instanceof IntParam) {
+                    final boolean required = ((IntParam) annotation).required();
+                    final int def = ((IntParam) annotation).defaultValue();
+                    final int max = ((IntParam) annotation).max();
+                    final int min = ((IntParam) annotation).min();
+                    int value = def;
+                    try {
+                        value = Integer.parseInt(context.getRemainingArgs()[argCursor.getAndAdd(1)]);
+                    } catch (ArrayIndexOutOfBoundsException ignored) {
+                        if (required) throw new AssertionError();
+                    }
+
+                    if (value > max || value < min) throw new AssertionError();
+                    return value;
                 }
                 return null;
-            })).toArray();
+            }).toArray();
 
             return (Transform) transform.newInstance(initargs);
         } else {
