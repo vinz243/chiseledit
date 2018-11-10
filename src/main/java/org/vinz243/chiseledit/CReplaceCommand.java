@@ -79,7 +79,12 @@ public class CReplaceCommand implements ICommand {
                         bitAccess.visitBits(((x, y, z, brush) -> {
                             final IBlockState brushState = brush.getState();
 
-                            final int brushId = Block.getIdFromBlock(brushState.getBlock());
+                            final int brushId;
+                            if (brushState != null) {
+                                brushId = Block.getIdFromBlock(brushState.getBlock());
+                            } else {
+                                return brush;
+                            }
                             final int brushMeta = brushState.getBlock().getMetaFromState(brushState);
 
                             if (brushId == sourceId && brushMeta == sourceMeta) {

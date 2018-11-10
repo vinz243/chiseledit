@@ -5,13 +5,22 @@ buildscript {
             name = "forge"
             url = "https://files.minecraftforge.net/maven"
         }
+        maven {
+            url = "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+        classpath "com.github.breadmoirai:github-release:2.2.0"
     }
 }
 
+/*plugins {
+    id "com.github.breadmoirai.github-release" version "2.2.0"
+}*/
+
 apply plugin: "net.minecraftforge.gradle.forge"
+
 
 version = modVersion
 group= modGroup
@@ -39,6 +48,15 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 }
+
+//githubRelease {
+//    owner "vinz243" // default is the last part of your group. Eg group: "com.github.breadmoirai" => owner: "breadmoirai"
+//    repo "chiseledit" // by default this is set to your project name
+//    targetCommitish "master" // by default this is set to "master"
+//    draft false // by default this is false
+//    prerelease true // by default this is false
+//    releaseAssets "build/libs/{modBaseName}-{version}.jar"
+//}
 
 processResources {
     // this will ensure that this task is redone when the versions change.
