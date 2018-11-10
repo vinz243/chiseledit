@@ -12,19 +12,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.vinz243.tesa.annotations.CursorTarget;
 import org.vinz243.tesa.context.CommandContext;
 import org.vinz243.tesa.context.Context;
+import org.vinz243.tesa.exceptions.InvalidSyntaxException;
 import org.vinz243.tesa.helpers.ChiselAPIAccess;
+import org.vinz243.tesa.helpers.TesaCursor;
 import org.vinz243.tesa.helpers.Vector;
+import org.vinz243.tesa.masks.IMaskable;
 import org.vinz243.tesa.masks.MaskFactory;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 import org.vinz243.tesa.transforms.Transform;
 import org.vinz243.tesa.visu.Visualizer;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.stream.IntStream;
 
 public class TesaManager {
@@ -163,23 +166,55 @@ public class TesaManager {
         return context.getPlayer().getCachedUniqueIdString();
     }
 
-    public void setMask(CommandContext ct) {
-        final MaskFactory maskFactory = getTessellator(ct).getMaskFactory();
+    public void setMask(CommandContext ct) throws InvalidSyntaxException {
+        final Tessellator tessellator = getTessellator(ct);
+        final String maskTarget = ct.getRemainingArgs()[0];
 
-        switch (ct.getRemainingArgs()[0]) {
-            case "add":
-                maskFactory.add(ct.getPos1(), ct.getPos2());
-                break;
-            case "sub":
-                maskFactory.sub(ct.getPos1(), ct.getPos2());
-                break;
-            case "set":
-                maskFactory.set(ct.getPos1(), ct.getPos2());
-                break;
-            case "int":
-                maskFactory.intersection(ct.getPos1(), ct.getPos2());
-                break;
+        final TesaCursor cursor = tessellator.getCursor();
+
+        final Method[] declaredMethods = cursor.getClass().getDeclaredMethods();
+
+        final Optional<Method> targetMethod = Arrays.stream(declaredMethods).filter((method) -> {
+            try {
+                final CursorTarget cursorTarget = method.getAnnotation(CursorTarget.class);
+
+                return Arrays.asList(cursorTarget.name()).contains(maskTarget);
+            } catch (NullPointerException ignored) {
+            }
+            return false;
+        }).findFirst();
+
+        targetMethod.orElseThrow(InvalidSyntaxException::new);
+
+        final Method method = targetMethod.get();
+        try {
+            final IMaskable maskable = (IMaskable) method.invoke(cursor);
+
+            final MaskFactory maskFactory = maskable.getMaskFactory();
+
+            switch (ct.getRemainingArgs()[1]) {
+                case "add":
+                    maskFactory.add(ct.getPos1(), ct.getPos2());
+                    break;
+                case "sub":
+                    maskFactory.sub(ct.getPos1(), ct.getPos2());
+                    break;
+                case "set":
+                    maskFactory.set(ct.getPos1(), ct.getPos2());
+                    break;
+                case "int":
+                    maskFactory.intersection(ct.getPos1(), ct.getPos2());
+                    break;
+            }
+
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
+    }
+
+    public void popTransform(CommandContext context) {
+        getTessellator(context).pop();
     }
 }

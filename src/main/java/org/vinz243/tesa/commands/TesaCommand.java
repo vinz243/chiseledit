@@ -13,10 +13,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import org.vinz243.tesa.TesaManager;
 import org.vinz243.tesa.context.CommandContext;
+import org.vinz243.tesa.exceptions.InvalidSyntaxException;
 import org.vinz243.tesa.helpers.StringComponent;
 import org.vinz243.tesa.helpers.Vector;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
-import org.vinz243.tesa.transforms.Transform;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.InvocationTargetException;
@@ -47,8 +47,7 @@ public class TesaCommand implements ICommand {
 
         switch (args[0]) {
             case "pop":
-                final List<Transform> transforms = TesaManager.getInstance().getTransforms(getContext(sender, args, 1));
-                transforms.remove(transforms.size() - 1);
+                TesaManager.getInstance().popTransform(getContext(sender, args, 1));
                 return;
             case "visu":
             case "debug":
@@ -78,7 +77,12 @@ public class TesaCommand implements ICommand {
                 return;
             case "mask":
                 final CommandContext ct = getContext(sender, args, 1);
-                TesaManager.getInstance().setMask(ct);
+                try {
+                    TesaManager.getInstance().setMask(ct);
+                } catch (InvalidSyntaxException e) {
+                    e.printStackTrace();
+                    sender.sendMessage(new StringComponent("Invalid syntax..."));
+                }
                 return;
         }
     }
