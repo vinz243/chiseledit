@@ -8,7 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public abstract class MultipleTransform implements Transform {
-    private final MaskFactory maskFactory = new MaskFactory();
+    private final MaskFactory outputMaskFactory = new MaskFactory();
+    private final MaskFactory inputMaskFactory = new MaskFactory();
 
     @Override
     public Iterable<TransformResult> apply(Vector in) {
@@ -20,8 +21,13 @@ public abstract class MultipleTransform implements Transform {
     abstract TransformResult transform(int i, Vector in);
 
     @Override
-    public MaskFactory getMaskFactory() {
-        return maskFactory;
+    public MaskFactory getInputMaskFactory() {
+        return inputMaskFactory;
+    }
+
+    @Override
+    public MaskFactory getOutputMaskFactory() {
+        return outputMaskFactory;
     }
 
 }

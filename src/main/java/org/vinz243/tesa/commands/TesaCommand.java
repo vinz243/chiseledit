@@ -81,7 +81,7 @@ public class TesaCommand implements ICommand {
                     TesaManager.getInstance().setMask(ct);
                 } catch (InvalidSyntaxException e) {
                     e.printStackTrace();
-                    sender.sendMessage(new StringComponent("Invalid syntax..."));
+                    sender.sendMessage(new StringComponent("Invalid syntax, use: /tesa mask <transform|group|global> <input|output|both> <set|add|sub|int>"));
                 }
                 return;
         }

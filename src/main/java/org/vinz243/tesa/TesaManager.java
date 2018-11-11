@@ -19,6 +19,7 @@ import org.vinz243.tesa.exceptions.InvalidSyntaxException;
 import org.vinz243.tesa.helpers.ChiselAPIAccess;
 import org.vinz243.tesa.helpers.TesaCursor;
 import org.vinz243.tesa.helpers.Vector;
+import org.vinz243.tesa.masks.ComposedMaskFactory;
 import org.vinz243.tesa.masks.IMaskable;
 import org.vinz243.tesa.masks.MaskFactory;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
@@ -190,9 +191,28 @@ public class TesaManager {
         try {
             final IMaskable maskable = (IMaskable) method.invoke(cursor);
 
-            final MaskFactory maskFactory = maskable.getMaskFactory();
+            final MaskFactory maskFactory;
 
             switch (ct.getRemainingArgs()[1]) {
+                case "i":
+                case "in":
+                case "input":
+                    maskFactory = maskable.getInputMaskFactory();
+                    break;
+                case "o":
+                case "out":
+                case "output":
+                    maskFactory = maskable.getOutputMaskFactory();
+                    break;
+                case "b":
+                case "both":
+                    maskFactory = new ComposedMaskFactory(maskable.getInputMaskFactory(), maskable.getOutputMaskFactory());
+                    break;
+                default:
+                    throw new InvalidSyntaxException("Use either input, output or both");
+            }
+
+            switch (ct.getRemainingArgs()[2]) {
                 case "add":
                     maskFactory.add(ct.getPos1(), ct.getPos2());
                     break;

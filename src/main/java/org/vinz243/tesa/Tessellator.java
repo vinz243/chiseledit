@@ -21,7 +21,9 @@ public class Tessellator implements IMaskable {
     private List<Transform> transforms = new ArrayList<>();
     private boolean chiselLocked = false;
     private Set<Integer> debouncedBlocks = new HashSet<>();
-    private final MaskFactory maskFactory = new MaskFactory();
+
+    private final MaskFactory inputMaskFactory = new MaskFactory();
+    private final MaskFactory outputMaskFactory = new MaskFactory();
 
     private final TesaCursor cursor = new TesaCursor();
 
@@ -42,15 +44,18 @@ public class Tessellator implements IMaskable {
     void apply(Vector pos, Consumer<TransformResult> applyFunction) {
         final ArrayList<Integer> placedBlocks = new ArrayList<>();
         placedBlocks.add(pos.blockPosHashCode());
-        apply(pos, applyFunction, transforms, placedBlocks, maskFactory.get());
+        apply(pos, applyFunction, transforms, placedBlocks);
     }
 
-    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, List<Integer> placedBlocks, Mask mask) {
+    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, List<Integer> placedBlocks) {
         IntStream.range(0, transforms.size()).forEach(i -> {
             List<Vector> children = new ArrayList<>();
 
             final Transform transform = transforms.get(i);
-            final Mask localMask = new IntersectionMask(mask, transform.getMaskFactory().get());
+            final Mask inputMask = new IntersectionMask(getInputMaskFactory().get(), transform.getInputMaskFactory().get());
+            final Mask outputMask = new IntersectionMask(getOutputMaskFactory().get(), transform.getOutputMaskFactory().get());
+
+            if (!inputMask.test(pos)) return;
 
             transform.apply(pos).forEach((result) -> {
                 final int hash = result.getVector().blockPosHashCode();
@@ -59,14 +64,13 @@ public class Tessellator implements IMaskable {
                 }
                 placedBlocks.add(hash);
 
-                if (localMask.test(result.getVector())) {
+                if (outputMask.test(result.getVector())) {
                     applyFunction.accept(result);
                 }
-
                 children.add(result.getVector());
             });
             children.forEach(v -> {
-                apply(v, applyFunction, transforms.subList(i + 1, transforms.size()), placedBlocks, mask);
+                apply(v, applyFunction, transforms.subList(i + 1, transforms.size()), placedBlocks);
             });
         });
     }
@@ -102,9 +106,15 @@ public class Tessellator implements IMaskable {
     }
 
     @Override
-    public MaskFactory getMaskFactory() {
-        return maskFactory;
+    public MaskFactory getInputMaskFactory() {
+        return inputMaskFactory;
     }
+
+    @Override
+    public MaskFactory getOutputMaskFactory() {
+        return outputMaskFactory;
+    }
+
 
     public void pop() {
         transforms.remove(transforms.size() - 1);

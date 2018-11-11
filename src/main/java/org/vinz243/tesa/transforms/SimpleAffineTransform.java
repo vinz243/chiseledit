@@ -9,7 +9,8 @@ import java.util.Collections;
 
 public abstract class SimpleAffineTransform implements Transform {
 
-    private final MaskFactory maskFactory = new MaskFactory();
+    private final MaskFactory inputMaskFactory = new MaskFactory();
+    private final MaskFactory outputMaskFactory = new MaskFactory();
 
     @Override
     public Iterable<TransformResult> apply(Vector in) {
@@ -25,7 +26,12 @@ public abstract class SimpleAffineTransform implements Transform {
     }
 
     @Override
-    public MaskFactory getMaskFactory() {
-        return maskFactory;
+    public MaskFactory getInputMaskFactory() {
+        return inputMaskFactory;
+    }
+
+    @Override
+    public MaskFactory getOutputMaskFactory() {
+        return outputMaskFactory;
     }
 }
