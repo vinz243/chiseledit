@@ -16,6 +16,7 @@ import org.vinz243.tesa.commands.TesaCommand;
 import org.vinz243.tesa.transforms.ReflectionTransform;
 import org.vinz243.tesa.transforms.TransformRegistry;
 import org.vinz243.tesa.transforms.YRevolutionTransform;
+import org.vinz243.tesa.transforms.YSymTransform;
 
 @Mod(
         modid = Chiseledit.MOD_ID,
@@ -52,7 +53,8 @@ public class Chiseledit {
                 .register("yrevolution", YRevolutionTransform.class)
                 .register("yrev", YRevolutionTransform.class)
                 .register("refl", ReflectionTransform.class)
-                .register("reflection", ReflectionTransform.class);
+                .register("reflection", ReflectionTransform.class)
+                .register("ysim", YSymTransform.class);
 
     }
 
