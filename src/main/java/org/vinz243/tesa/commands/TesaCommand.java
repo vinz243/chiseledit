@@ -46,6 +46,12 @@ public class TesaCommand implements ICommand {
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 
         switch (args[0]) {
+            case "disable":
+                TesaManager.getInstance().disable(getContext(sender, args, 1));
+                return;
+            case "enable":
+                TesaManager.getInstance().enable(getContext(sender, args, 1));
+                return;
             case "pop":
                 TesaManager.getInstance().popTransform(getContext(sender, args, 1));
                 return;

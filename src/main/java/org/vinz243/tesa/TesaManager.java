@@ -10,6 +10,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.vinz243.tesa.annotations.CursorTarget;
@@ -89,6 +90,14 @@ public class TesaManager {
     }
 
     @SubscribeEvent
+    public void onPlayerJoin(EntityJoinWorldEvent event) {
+        final Tessellator tessellator = tessellators.get(event.getEntity().getCachedUniqueIdString());
+        if (tessellator != null) {
+            tessellator.setEnabled(false);
+        }
+    }
+
+    @SubscribeEvent
     public void onBlockPlaced(BlockEvent.PlaceEvent evt) {
         final Context context = new Context(evt.getPlayer(), evt.getWorld());
         final String playerId = getPlayerId(context);
@@ -98,9 +107,13 @@ public class TesaManager {
         final BlockPos pos = evt.getPos();
         final IBlockState placedBlock = evt.getPlacedBlock();
 
-        tessellators.get(playerId).apply(new Vector(pos), (position) -> {
-            evt.getWorld().setBlockState(position.getVector().toBlockPos(), placedBlock);
-        });
+        final Tessellator tessellator = tessellators.get(playerId);
+
+        if (tessellator.isEnabled()) {
+            tessellator.apply(new Vector(pos), (position) -> {
+                evt.getWorld().setBlockState(position.getVector().toBlockPos(), placedBlock);
+            });
+        }
     }
 
     @SubscribeEvent
@@ -112,9 +125,13 @@ public class TesaManager {
 
         final BlockPos pos = evt.getPos();
 
-        tessellators.get(playerId).apply(new Vector(pos), (position) -> {
-            evt.getWorld().destroyBlock(position.getVector().toBlockPos(), false);
-        });
+        final Tessellator tessellator = tessellators.get(playerId);
+
+        if (tessellator.isEnabled()) {
+            tessellator.apply(new Vector(pos), (position) -> {
+                evt.getWorld().destroyBlock(position.getVector().toBlockPos(), false);
+            });
+        }
     }
 
     @SubscribeEvent
@@ -131,7 +148,7 @@ public class TesaManager {
 
         final Tessellator tessellator = tessellators.get(playerId);
 
-        if (tessellator.isChiselLocked()) {
+        if (tessellator.isChiselLocked() || !tessellator.isEnabled()) {
             return;
         }
 
@@ -236,5 +253,13 @@ public class TesaManager {
 
     public void popTransform(CommandContext context) {
         getTessellator(context).pop();
+    }
+
+    public void disable(CommandContext context) {
+        getTessellator(context).setEnabled(false);
+    }
+
+    public void enable(CommandContext context) {
+        getTessellator(context).setEnabled(true);
     }
 }

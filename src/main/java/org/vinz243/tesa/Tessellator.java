@@ -20,6 +20,7 @@ import java.util.stream.IntStream;
 public class Tessellator implements IMaskable {
     private List<Transform> transforms = new ArrayList<>();
     private boolean chiselLocked = false;
+    private boolean enabled = true;
     private Set<Integer> debouncedBlocks = new HashSet<>();
 
     private final MaskFactory inputMaskFactory = new MaskFactory();
@@ -119,5 +120,13 @@ public class Tessellator implements IMaskable {
     public void pop() {
         transforms.remove(transforms.size() - 1);
         cursor.setCurrentTransform(transforms.get(transforms.size() - 1));
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }
