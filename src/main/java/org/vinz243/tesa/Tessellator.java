@@ -28,6 +28,10 @@ public class Tessellator implements IMaskable {
 
     private final TesaCursor cursor = new TesaCursor();
 
+    public Tessellator() {
+        cursor.setCurrentTessellator(this);
+    }
+
     public TesaCursor getCursor() {
         return cursor;
     }
