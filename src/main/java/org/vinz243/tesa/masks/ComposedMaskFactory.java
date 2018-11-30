@@ -66,6 +66,6 @@ public class ComposedMaskFactory extends MaskFactory {
 
     @Override
     public Mask get() {
-        return new AddMask(first.get(), second.get());
+        return new IntersectionMask(first.get(), second.get());
     }
 }

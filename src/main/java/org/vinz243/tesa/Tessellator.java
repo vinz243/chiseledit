@@ -1,13 +1,11 @@
 package org.vinz243.tesa;
 
 import org.vinz243.tesa.context.CommandContext;
+import org.vinz243.tesa.helpers.Matrix;
 import org.vinz243.tesa.helpers.TesaCursor;
 import org.vinz243.tesa.helpers.TransformResult;
 import org.vinz243.tesa.helpers.Vector;
-import org.vinz243.tesa.masks.IMaskable;
-import org.vinz243.tesa.masks.IntersectionMask;
-import org.vinz243.tesa.masks.Mask;
-import org.vinz243.tesa.masks.MaskFactory;
+import org.vinz243.tesa.masks.*;
 import org.vinz243.tesa.transforms.NoSuchTransformException;
 import org.vinz243.tesa.transforms.Transform;
 import org.vinz243.tesa.transforms.TransformRegistry;
@@ -15,7 +13,6 @@ import org.vinz243.tesa.transforms.TransformRegistry;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.stream.IntStream;
 
 public class Tessellator implements IMaskable {
     private List<Transform> transforms = new ArrayList<>();
@@ -47,36 +44,35 @@ public class Tessellator implements IMaskable {
     }
 
     void apply(Vector pos, Consumer<TransformResult> applyFunction) {
-        final ArrayList<Integer> placedBlocks = new ArrayList<>();
+        final Set<Integer> placedBlocks = new HashSet<>();
         placedBlocks.add(pos.blockPosHashCode());
         apply(pos, applyFunction, transforms, placedBlocks);
     }
 
-    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, List<Integer> placedBlocks) {
-        IntStream.range(0, transforms.size()).forEach(i -> {
-            List<Vector> children = new ArrayList<>();
+    private void apply(Vector pos, Consumer<TransformResult> applyFunction, List<Transform> transforms, Set<Integer> placedBlocks) {
+        Map<Vector, TransformResult> results = new HashMap<>();
+        results.put(pos, new TransformResult(pos, pos, Matrix.IDENTITY_3));
 
-            final Transform transform = transforms.get(i);
-            final Mask inputMask = new IntersectionMask(getInputMaskFactory().get(), transform.getInputMaskFactory().get());
-            final Mask outputMask = new IntersectionMask(getOutputMaskFactory().get(), transform.getOutputMaskFactory().get());
+        for (Transform transform : transforms) {
 
-            if (!inputMask.test(pos)) return;
+            final Mask inputMask = new ComposedMaskFactory(getInputMaskFactory(), transform.getInputMaskFactory()).get();
+            final Mask outputMask = new ComposedMaskFactory(getOutputMaskFactory(), transform.getOutputMaskFactory()).get();
 
-            transform.apply(pos).forEach((result) -> {
-                final int hash = result.getVector().blockPosHashCode();
-                if (placedBlocks.indexOf(hash) >= 0) {
-                    return;
-                }
-                placedBlocks.add(hash);
+            new HashMap<>(results).forEach((key, value) -> {
 
-                if (outputMask.test(result.getVector())) {
-                    applyFunction.accept(result);
-                }
-                children.add(result.getVector());
+                if (!inputMask.test(key)) return;
+
+                transform.apply(value.getVector()).forEach((result) -> {
+                    final Matrix transform1 = result.getChiselTransform().multiply(value.getChiselTransform());
+                    final TransformResult transformResult = new TransformResult(result.getVector(), result.getInput(), transform1);
+                    transformResult.setMasked(!outputMask.test(result.getVector()));
+                    results.merge(result.getVector(), transformResult, TransformResult::new);
+                });
             });
-            children.forEach(v -> {
-                apply(v, applyFunction, transforms.subList(i + 1, transforms.size()), placedBlocks);
-            });
+        }
+
+        results.values().forEach(r -> {
+            if (!r.isMasked()) applyFunction.accept(r);
         });
     }
 
@@ -93,6 +89,8 @@ public class Tessellator implements IMaskable {
     public void clear() {
         transforms.clear();
         cursor.setCurrentTransform(null);
+        inputMaskFactory.set(new VoidMask());
+        outputMaskFactory.set(new VoidMask());
     }
 
     public void addTransform(Transform transform) {

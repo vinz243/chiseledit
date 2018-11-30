@@ -1,9 +1,6 @@
 package org.vinz243.tesa;
 
-import mod.chiselsandbits.api.APIExceptions;
-import mod.chiselsandbits.api.EventBlockBitPostModification;
-import mod.chiselsandbits.api.IBitAccess;
-import mod.chiselsandbits.api.IChiselAndBitsAPI;
+import mod.chiselsandbits.api.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -105,12 +102,14 @@ public class TesaManager {
         if (!tessellators.containsKey(playerId)) return;
 
         final BlockPos pos = evt.getPos();
+        System.out.println("OPEN pos = " + pos);
         final IBlockState placedBlock = evt.getPlacedBlock();
 
         final Tessellator tessellator = tessellators.get(playerId);
 
         if (tessellator.isEnabled()) {
             tessellator.apply(new Vector(pos), (position) -> {
+                System.out.println("position = " + position);
                 evt.getWorld().setBlockState(position.getVector().toBlockPos(), placedBlock);
             });
         }
@@ -135,6 +134,18 @@ public class TesaManager {
     }
 
     @SubscribeEvent
+    void onBitModification(EventBlockBitModification event) {
+        final Context context = new Context(event.getPlayer(), event.getWorld());
+        final String playerId = getPlayerId(context);
+
+        if (!tessellators.containsKey(playerId)) return;
+
+        final Tessellator tessellator = tessellators.get(playerId);
+
+        tessellator.setChiselLocked(false);
+    }
+
+    @SubscribeEvent
     void onChiselEdited(EventBlockBitPostModification event) {
         final BlockPos pos = event.getPos();
         final EntityPlayer closestPlayer = event.getWorld().getClosestPlayer(pos.getX(), pos.getY(), pos.getZ(), 20, false);
@@ -148,6 +159,7 @@ public class TesaManager {
 
         final Tessellator tessellator = tessellators.get(playerId);
 
+
         if (tessellator.isChiselLocked() || !tessellator.isEnabled()) {
             return;
         }
@@ -159,7 +171,7 @@ public class TesaManager {
             try {
                 IBitAccess outAccess = bitsAPI.getBitAccess(event.getWorld(), result.getVector().toBlockPos());
 
-                IBitAccess inAccess = bitsAPI.getBitAccess(event.getWorld(), result.getInput().toBlockPos());
+                IBitAccess inAccess = bitsAPI.getBitAccess(event.getWorld(), pos);
 
                 inAccess.visitBits((x, y, z, brush) -> {
                     Vector outPos = result.getChiselTransform().multiply(new Vector(x, y, z).add(-7.5)).add(7.5);
@@ -177,7 +189,6 @@ public class TesaManager {
             }
         });
 
-        tessellator.setChiselLocked(false);
     }
 
     private String getPlayerId(Context context) {
